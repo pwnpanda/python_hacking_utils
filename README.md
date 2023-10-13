@@ -8,24 +8,26 @@ Use by doing: `import py_hack_utils` (py_hack_utils.py should be in the current 
 # Overview of functions:
 All functions are split into logical subclasses.
 These work by calling: `subclass.function(data)`
+Example: `encode.b32`
+
 ## Subclasses
 * Encode / Decode
-    * base32
-    * base64
-    * base64_url format
-    * url encoding
-    * html encoding
+    * b32 (base32)
+    * b64 (base64)
+    * b64url (base64 url format)
+    * url (url encoding)
+    * html (html encoding)
 * Analyze
     * parquet (hadoop db delta)
 
 
 # ToDo
-- [] Payload listing
-- [] Payload generation
-- [] Encode/Decode only special characters
-- [] to Hex
-- [] to unicode
-- [] Chars to homoglyphs
-- [] list characters with homoglyphs
-- [] Analyze file formats
-- [] Autodocument which functions exist and the structure
+- [ ] Payload listing
+- [ ] Payload generation
+- [ ] Encode/Decode only special characters
+- [ ] to Hex
+- [ ] to unicode
+- [ ] Chars to homoglyphs
+- [ ] list characters with homoglyphs
+- [ ] Analyze file formats
+- [ ] Autodocument which functions exist and the structure
