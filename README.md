@@ -1,6 +1,6 @@
 # python_hacking_utils
 A python module of commonly used utilities that can be included or used by itself to speed up common processes, like url encoding and decoding!
-Use by doing: `import py_hack_utils` (py_hack_utils.py should be in the current folder you are executing from - e.g. the current directory when running python/python3)
+Use by doing: `import hackutils` (hackutils.py should be in the current folder you are executing from - e.g. the current directory when running python/python3)
 
 # Install
 `pip install -r requirements.txt` (potentially `python -m pip install -r requirements.txt`)
