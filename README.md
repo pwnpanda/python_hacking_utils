@@ -18,7 +18,7 @@ Example: `encode.b32`
     * url (url encoding)
     * html (html encoding)
 * Analyze
-    * parquet (hadoop db delta)
+    * parquet (hadoop data storage format)
 
 
 # ToDo
