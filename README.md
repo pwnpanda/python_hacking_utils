@@ -31,3 +31,7 @@ Example: `encode.b32`
 - [ ] list characters with homoglyphs
 - [ ] Analyze file formats
 - [ ] Autodocument which functions exist and the structure
+- [ ] Look for:
+    * Common file formats needing analysis
+    * Common encoding / decoding
+    * Common payloads & test-strings (E.G. ACAR)
