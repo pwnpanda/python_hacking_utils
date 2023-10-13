@@ -22,8 +22,8 @@ Example: `encode.b32`
 
 
 # ToDo
-- [ ] Payload listing
-- [ ] Payload generation
+- [X] Payload listing
+- [x] Payload generation
 - [ ] Encode/Decode only special characters
 - [ ] to Hex
 - [ ] to unicode
