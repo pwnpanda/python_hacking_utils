@@ -14,7 +14,7 @@ You can use this as a library or as a command line tool.
         b. `hackutils.Decode()..url("%3c")`
 2. Usage as command line tool:
     1. `python hackutils.py p -l` 
-    2. `python hackutils.py d -url "%3c`
+    2. `python hackutils.py d -url "%3c"`
 
 # Overview of functions:
 All functions are split into logical subclasses.
