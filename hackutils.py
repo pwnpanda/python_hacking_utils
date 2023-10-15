@@ -109,7 +109,9 @@ class Payload:
         x = 0
         all += "Payloads:\n" 
         for pl in self.payloads:
-            all += print(F"{x}: {pl}\n")
+            print(x)
+            print(pl)
+            all += F"{x}: {pl}\n"
             x += 1
         return all
     
@@ -119,7 +121,7 @@ class Payload:
         all += F"Payloads for {target}:\n"
         for pl in self.payloads:
             real_pl = pl.replace(self.placeholder, target)
-            all +=F"{x}: {real_pl}\n"
+            all += F"{x}: {real_pl}\n"
             x += 1
         return all
 
