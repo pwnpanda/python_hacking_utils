@@ -10,13 +10,13 @@ import html
 
 class Decode:
     def b32(self, user_in):
-        return base64.b32encode(user_in)
+        return base64.b32encode(user_in).decode("utf-8")
 
     def b64(self, user_in):
-        return base64.b64decode(user_in)
+        return base64.b64decode(user_in).decode("utf-8")
 
     def b64url(self, user_in):
-        return base64.urlsafe_b64decode(user_in)
+        return base64.urlsafe_b64decode(user_in).decode("utf-8")
 
     def url(self, user_in):
         return urllib.parse.unquote_plus(user_in)
@@ -26,13 +26,13 @@ class Decode:
 
 class Encode:
     def b32(self, user_in):
-        return base64.b32decode(user_in)
+        return base64.b32decode(user_in).decode("utf-8")
 
     def b64(self, user_in):
-        return base64.b64encode(user_in)
+        return base64.b64encode(user_in).decode("utf-8")
 
     def b64url(self, user_in):
-        return base64.urlsafe_b64encode(user_in)
+        return base64.urlsafe_b64encode(user_in).decode("utf-8")
 
     def url(self, user_in):
         return urllib.parse.quote_plus(user_in)
@@ -42,10 +42,10 @@ class Encode:
 
 class Analyze:
     def parquet(self, user_in):
-        if len(sys.argv) > 1:
-            print(F"Data:\n{pq.read_table(sys.argv[1])}")
-        else:
-            print("Use program with filepath to .parquet file as the first argument!")
+        try:
+            return (F"Data:\n{pq.read_table(user_in)}")
+        except Exception as e:
+            return (F"Could not decode file: {user_in} into parquet file format.\nError: {e}")
 
 
 class Payload:
@@ -105,36 +105,107 @@ class Payload:
     ]
 
     def list(self):
+        all = ""
         x = 0
-        print("Payloads:")
+        all += "Payloads:\n" 
         for pl in self.payloads:
-            print(F"{x}: {pl}")
+            all += print(F"{x}: {pl}\n")
             x += 1
+        return all
     
     def generate(self, target):
+        all = ""
         x = 0
-        print(F"Payloads for {target}:")
+        all += F"Payloads for {target}:\n"
         for pl in self.payloads:
             real_pl = pl.replace(self.placeholder, target)
-            print(F"{x}: {real_pl}")
+            all +=F"{x}: {real_pl}\n"
             x += 1
+        return all
 
 if __name__ == "__main__":
     import argparse
+    import inspect
+
+    def generate_parser(parser, methods):
+        for m in methods:
+            #print(m[0])
+            parser.add_argument(F"-{m[0]}", help=F"Decode a {m[0]} encoded string", nargs=1, metavar="data")
 
     pl = Payload()
     dc = Decode()
     enc = Encode()
     an = Analyze()
 
-    #TODO handle arguments etc!
     parser = argparse.ArgumentParser(
-        usage="%(prog)s [OPTION]"
-        description="Utility tools for hacking!"
+        usage="%(prog)s [OPTION]",
+        description="Utility tools for hacking!",
+        add_help=True
     )
-    parser.add_argument("-p", "--pl", "--payload", help="Payload related functions", choices=[])
-    parser.add_argument("-d", "--decode", help="Decoding input using different algorithms", choices=[])
-    parser.add_argument("-e", "--enc", "--encode", help="Encoding input using different algorithms", choices=[])
-    parser.add_argument("-a", "--analyze", help="Analyze the input (usually a file) using different techniques", choices=[])
 
-    # TODO handle different sub-options for a command
+    # hackutil.py - -b64 base64string
+    subparsers = parser.add_subparsers(required=True)
+
+    # Payload parser
+    parser_pl = subparsers.add_parser("payload", help="Payload related functions", aliases=["p", "pl"])
+    parser_pl.add_argument("-l", "--list", help="List all payloads", action="store_true")
+    parser_pl.add_argument("-g", "--generate", help="Generate payloads using the given input as the active part (e.g. URL)", nargs=1, metavar="URL")
+    parser_pl.set_defaults(func='payload')
+    
+    # Analyze parser
+    parser_an = subparsers.add_parser("analyze", help="Analyze the input (usually a file) using different techniques", aliases=["a", "analyze"])
+    parser_an.add_argument("-pq", "--parquet", help="Parse parquet input-file", nargs=1, metavar="in_file")
+    parser_an.set_defaults(func='analyze')
+
+    # Decoder parser
+    parser_dec = subparsers.add_parser("decode", help="Decoding input using different algorithms", aliases=["d", "decode"])
+    parser_dec.set_defaults(func='decode')
+    # Encoder parser
+    parser_enc = subparsers.add_parser("encode", help="Encoding input using different algorithms", aliases=["e", "enc", "encode"])
+    parser_enc.set_defaults(func='encode')
+
+    method_list = inspect.getmembers(enc, predicate=inspect.ismethod)
+    generate_parser(parser_enc, method_list)
+    generate_parser(parser_dec, method_list)
+    
+    args = parser.parse_args()
+
+    
+    func = args.func
+    res = ""
+    if func == "encode":
+        if args.b32:
+            res = enc.b32(args.b32[0].encode("utf-8"))
+        if args.b64:
+            res = enc.b64(args.b64[0].encode("utf-8"))
+        if args.b64url:
+            res = enc.b64url(args.b64url[0].encode("utf-8"))
+        if args.url:
+            res = enc.url(args.url[0])
+        if args.html:
+            res = enc.html(args.html[0])
+
+    if func == "decode":
+        if args.b32:
+            res = dc.b32(args.b32[0])
+        if args.b64:
+            res = dc.b64(args.b64[0])
+        if args.b64url:
+            res = dc.b64url(args.b64url[0])
+        if args.url:
+            res = dc.url(args.url[0])
+        if args.html:
+            res = dc.html(args.html[0])
+
+    if func == "payload":
+        if args.list:
+            res = pl.list()
+        if args.generate:
+            res = pl.generate(args.generate[0])
+
+    if func == "analyze":
+        if args.parquet:
+            res = an.parquet(args.parquet[0])
+    
+
+    print(res)
