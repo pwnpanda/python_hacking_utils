@@ -11,15 +11,17 @@ You can use this as a library or as a command line tool.
     1. `python` or `python3` **NB**: hackutils.py should be in the current folder you are executing from - e.g. the current directory when running python/python3 
     2. `import hackutils`
     3. Call function:
-        a. `hackutils.Payload().list()`
-        b. `hackutils.Decode().url("%3c")`
+        * `hackutils.Payload().list()`
+        * `hackutils.Decode().url("%3c")`
 2. Usage as command line tool:
     1. `python hackutils.py p -l` 
     2. `python hackutils.py d -url "%3c"`
 
 # Overview of functions:
 All functions are split into logical subclasses.
+
 These work by calling: `subclass.function(data)`
+
 Example: `encode.url("/")`
 
 ## Subclasses
