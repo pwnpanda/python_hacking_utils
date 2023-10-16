@@ -31,6 +31,9 @@ Example: `encode.url("/")`
     * b64url (base64 url format)
     * url (url encoding)
     * html (html encoding)
+    * hex (hex string)
+    * hexint (hex integer)
+    * hexweb (hex with \x infront of every hexvalue, e.g. `\x61\x62\x63` for `abc`)
 
 * Analyze
     * parquet (hadoop data storage format)

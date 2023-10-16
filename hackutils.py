@@ -2,11 +2,12 @@
 import numpy as np 
 import pandas as pd
 import pyarrow.parquet as pq
-import sys
 
 import base64 
 import urllib
+import string
 import html
+import re
 
 class Decode:
     def b32(self, user_in):
@@ -23,6 +24,33 @@ class Decode:
     
     def html(self, user_in):
         return html.unescape(user_in)
+    
+    def hex(self, user_in):
+        try:
+            data = user_in.strip("0x")
+            return base64.b16decode(data).decode("utf-8")
+        except Exception as e:
+            return F"Input was of type: {type(user_in)}, but type(string) is required!\nThe format expected is: '0x12'.\nError: {e}"
+
+    def hexint(self, user_in):
+        try:
+            return int(user_in, 16)
+        except Exception as e:
+            return F"Input was: {type(user_in)}, but type hex string is required!\nError: {e}"
+    
+    # needs work
+    # Want it to print "unprintable" characters using representation ( repr()? )
+    # e.g. 0x0a = \n
+    def hexweb(self, user_in):
+        
+        printable = string.ascii_letters + string.digits + string.punctuation + ' '
+        #return ''.join(c if c in printable else r'\x{0:02x}'.format(ord(c)) for c in s)
+
+        print(user_in)
+        data = user_in.split(r"\x")
+        data = data[1:]
+        hexstring = "0x" + "".join(data)
+        return self.hex(hexstring)
 
 class Encode:
     def b32(self, user_in):
@@ -39,6 +67,34 @@ class Encode:
     
     def html(self, user_in):
         return html.escape(user_in)
+    
+    # First try to handle as int. If error, fallback to string
+    def hex(self, user_in):
+        try:
+            return "0x"+bytes.hex(user_in.encode("utf-8"))
+        # Also cannot convert from text to hex
+        except Exception as e:
+            return F"Input was: {user_in}, but hex string is required!\nError: {e}"
+    
+    def hexint(self, user_in):
+        try:
+            inp = int(user_in)
+            if isinstance(inp, int):
+                return hex(inp)
+        # Cannot cast to int or convert to hex
+        except Exception as e:
+            return F"Input was: {type(user_in)}, but type int is required!\nError: {e}"
+
+    #Todo needs work - probably just needs extra escaping but needs further investigation.
+    # Should return ONLY hex!
+    def hexweb(self, user_in):
+        prepend=r"\x"
+        print(user_in)
+        data = self.hex(user_in).strip("0x")
+        # for 2entries in data, add \x and make one string
+        split = re.findall('.{1, 2}', data)
+        res = "".join([F"{prepend}{ent}" for ent in split])
+        return res
 
 class Analyze:
     def parquet(self, user_in):
