@@ -27,7 +27,12 @@ class Decode:
     
     def hex(self, user_in):
         try:
-            data = user_in.strip("0x")
+            #strip 0x
+            if user_in.startswith("0x"):
+                data = user_in[2:].upper()
+            else:
+                data = user_in.upper()
+
             return base64.b16decode(data).decode("utf-8")
         except Exception as e:
             return F"Input was of type: {type(user_in)}, but type(string) is required!\nThe format expected is: '0x12'.\nError: {e}"
@@ -42,15 +47,19 @@ class Decode:
     # Want it to print "unprintable" characters using representation ( repr()? )
     # e.g. 0x0a = \n
     def hexweb(self, user_in):
-        
-        printable = string.ascii_letters + string.digits + string.punctuation + ' '
-        #return ''.join(c if c in printable else r'\x{0:02x}'.format(ord(c)) for c in s)
-
-        print(user_in)
         data = user_in.split(r"\x")
         data = data[1:]
         hexstring = "0x" + "".join(data)
-        return self.hex(hexstring)
+        decode = self.hex(hexstring)
+        out = ""
+        for char in decode:
+            if char.isprintable():
+                out += char
+            else:
+                chr = repr(char).strip("'")
+                out += chr.strip("\"")
+                #out += r'\x{0:02x}'.format(ord(char))
+        return out
 
 class Encode:
     def b32(self, user_in):
@@ -85,14 +94,11 @@ class Encode:
         except Exception as e:
             return F"Input was: {type(user_in)}, but type int is required!\nError: {e}"
 
-    #Todo needs work - probably just needs extra escaping but needs further investigation.
-    # Should return ONLY hex!
     def hexweb(self, user_in):
         prepend=r"\x"
-        print(user_in)
         data = self.hex(user_in).strip("0x")
         # for 2entries in data, add \x and make one string
-        split = re.findall('.{1, 2}', data)
+        split = [data[i:i+2] for i in range(0,len(data), 2)]
         res = "".join([F"{prepend}{ent}" for ent in split])
         return res
 
@@ -165,8 +171,6 @@ class Payload:
         x = 0
         all += "Payloads:\n" 
         for pl in self.payloads:
-            print(x)
-            print(pl)
             all += F"{x}: {pl}\n"
             x += 1
         return all
@@ -187,7 +191,6 @@ if __name__ == "__main__":
 
     def generate_parser(parser, methods):
         for m in methods:
-            #print(m[0])
             parser.add_argument(F"-{m[0]}", help=F"Decode a {m[0]} encoded string", nargs=1, metavar="data")
 
     pl = Payload()
@@ -242,6 +245,12 @@ if __name__ == "__main__":
             res = enc.url(args.url[0])
         if args.html:
             res = enc.html(args.html[0])
+        if args.hex:
+            res = enc.hex(args.hex[0])
+        if args.hexint:
+            res = enc.hexint(args.hexint[0])
+        if args.hexweb:
+            res = enc.hexweb(args.hexweb[0])
 
     if func == "decode":
         if args.b32:
@@ -254,6 +263,12 @@ if __name__ == "__main__":
             res = dc.url(args.url[0])
         if args.html:
             res = dc.html(args.html[0])
+        if args.hex:
+            res = dc.hex(args.hex[0])
+        if args.hexint:
+            res = dc.hexint(args.hexint[0])
+        if args.hexweb:
+            res = dc.hexweb(args.hexweb[0])
 
     if func == "payload":
         if args.list:
