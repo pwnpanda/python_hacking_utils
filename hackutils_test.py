@@ -1,10 +1,7 @@
 from hackutils import *
 
 class TestEnc:
-    encode = ""
-
-    def __init__(self) -> None:
-        self.encode = Encode()
+    encode = Encode()
     
     def Testb32(self):
         data = "Når+!*"
@@ -13,10 +10,8 @@ class TestEnc:
         assert encdata == self.encode.b32(data)
 
 class TestDec:
-    decode = ""
-
-    def __init__(self) -> None:
-        self.decode = Decode()
+    decode = Decode()
+        
     
     def Testb32(self):
         data = "Når+!*"
@@ -40,19 +35,13 @@ class TestEncDec:
         assert data == self.decode.b32(encdata)
 
 class TestAnalyze:
-    analyze = ""
-
-    def __init__(self) -> None:
-        self.analyze = Analyze()
+    analyze = Analyze()
 
     def TestParquet(self):
         pass
 
 class TestPayload:
-    payload = ""
-
-    def __init__(self) -> None:
-        self.payload = Payload()
+    payload = Payload()
 
     def TestGenerate(self):
         x = 0
