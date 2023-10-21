@@ -34,6 +34,7 @@ Example: `encode.url("/")`
     * hex (hex string)
     * hexint (hex integer)
     * hexweb (hex with \x infront of every hexvalue, e.g. `\x61\x62\x63` for `abc`)
+    * unicode
 
 * Analyze
     * parquet (hadoop data storage format)
