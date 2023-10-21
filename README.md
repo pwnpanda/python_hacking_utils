@@ -45,7 +45,7 @@ Example: `encode.url("/")`
 # ToDo
 - [X] Payload listing
 - [X] Payload generation
-- [ ] Have tests to ensure correct functionality
+- [X] Have tests to ensure correct functionality
 - [ ] Encode/Decode only special characters
 - [X] to Hex
 - [ ] to unicode
