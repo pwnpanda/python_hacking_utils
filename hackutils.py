@@ -11,13 +11,13 @@ import re
 
 class Decode:
     def b32(self, user_in):
-        return base64.b32encode(user_in).decode("utf-8")
+        return base64.b32decode(user_in.encode("utf-8")).decode("utf-8")
 
     def b64(self, user_in):
-        return base64.b64decode(user_in).decode("utf-8")
+        return base64.b64decode(user_in.encode("utf-8")).decode("utf-8")
 
     def b64url(self, user_in):
-        return base64.urlsafe_b64decode(user_in).decode("utf-8")
+        return base64.urlsafe_b64decode(user_in.encode("utf-8")).decode("utf-8")
 
     def url(self, user_in):
         return urllib.parse.unquote_plus(user_in)
@@ -63,7 +63,7 @@ class Decode:
 
 class Encode:
     def b32(self, user_in):
-        return base64.b32decode(user_in).decode("utf-8")
+        return base64.b32encode(user_in).decode("utf-8")
 
     def b64(self, user_in):
         return base64.b64encode(user_in).decode("utf-8")
