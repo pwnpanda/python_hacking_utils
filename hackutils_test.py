@@ -49,6 +49,11 @@ class TestEnc:
 
         assert encdata == self.encode.hexweb(self.data)
 
+    def testEncunicode(self):
+        encdata = r"\u004e\u00e5\u0072\u002b\u0021\u002a"
+
+        assert encdata == self.encode.unicode(self.data)
+
 class TestDec:
     decode = Decode()
     data = "Når+!*"
@@ -95,6 +100,11 @@ class TestDec:
         encdata = "\\x4e\\xc3\\xa5\\x72\\x2b\\x21\\x2a"
 
         assert self.data == self.decode.hexweb(encdata)
+
+    def testDecunicode(self):
+        encdata = r"\u004e\u00e5\u0072\u002b\u0021\u002a"
+
+        assert self.data == self.decode.unicode(encdata)
 
 class TestEncDec:
     decode = Decode()
@@ -156,11 +166,18 @@ class TestEncDec:
         assert data == self.decode.hexint(self.encode.hexint(data))
 
     def testEncDechexweb(self):
-        encdata = "\\x4e\\xc3\\xa5\\x72\\x2b\\x21\\x2a"
+        encdata = r"\x4e\xc3\xa5\x72\x2b\x21\x2a"
         
         assert encdata == self.encode.hexweb(self.data)
         assert self.data == self.decode.hexweb(encdata)
         assert self.data == self.decode.hexweb(self.encode.hexweb(self.data))
+
+    def testEncDecunicode(self):
+        encdata = r"\u004e\u00e5\u0072\u002b\u0021\u002a"
+
+        assert encdata == self.encode.unicode(self.data)
+        assert self.data == self.decode.unicode(encdata)
+        assert self.data == self.decode.unicode(self.encode.unicode(self.data))
 
 class TestAnalyze:
     analyze = Analyze()
@@ -178,8 +195,35 @@ class TestPayload:
             assert "|placeholder|" not in pl
 
 if __name__ == "__main__":
-    TestEnc().testEncb32()
-    TestDec().testDecb32()
-    TestEncDec().testEncDecb32()
+    e = TestEnc()
+    d = TestDec()
+    ed = TestEncDec()
+    e.testEncb32()
+    e.testEncb64()
+    e.testEncb64Url()
+    e.testEnchex()
+    e.testEnchexint()
+    e.testEnchexweb()
+    e.testEnchtml()
+    e.testEncurl()
+    e.testEncunicode()
+    d.testDecb32()
+    d.testDecb64()
+    d.testDecb64url()
+    d.testDechex()
+    d.testDechexint()
+    d.testDechexweb()
+    d.testDechtml()
+    d.testDecurl()
+    d.testDecunicode()
+    ed.testEncDecb32()
+    ed.testEncDecb64()
+    ed.testEncDecb64url()
+    ed.testEncDechex()
+    ed.testEncDechexint()
+    ed.testEncDechexweb()
+    ed.testEncDechtml()
+    ed.testEncDecurl()
+    ed.testEncDecunicode()
     TestAnalyze().testParquet()
     TestPayload().testGenerate()

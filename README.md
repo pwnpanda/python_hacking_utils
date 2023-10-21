@@ -18,7 +18,7 @@ You can use this as a library or as a command line tool.
     2. `python hackutils.py d -url "%3c"`
 
 # Overview of functions:
-All functions are split into logical subclasses.
+All functionality is split into logical subclasses based on functionality, then into functions under that class.
 
 These work by calling: `subclass.function(data)`
 
@@ -48,7 +48,7 @@ Example: `encode.url("/")`
 - [X] Have tests to ensure correct functionality
 - [ ] Encode/Decode only special characters
 - [X] to Hex
-- [ ] to unicode
+- [x] to unicode
 - [ ] Chars to homoglyphs
 - [ ] list characters with homoglyphs
 - [ ] Analyze file formats
